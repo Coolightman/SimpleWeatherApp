@@ -1,5 +1,7 @@
 package com.example.simpleweatherkotlin
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -36,18 +38,47 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun setBackgroundImage(typeId: String) {
+        val img = getImageByWeatherId(typeId)
+        setImageByUrl(img)
+    }
+
+    private fun getImageByWeatherId(id: String): String {
+        var url = ""
+        val craft = "https://images.wallpaperscraft.ru/image/single/"
+        when {
+            id.startsWith("2") -> url = craft +
+                    "molniia_groza_pasmurno_126444_1080x1920.jpg"
+            id.startsWith("3") -> url = craft +
+                    "ozero_gory_derevia_159678_1080x1920.jpg"
+            id.startsWith("5") -> url = craft +
+                    "doroga_asfalt_dozhd_141217_1080x1920.jpg"
+            id.startsWith("6") -> url = craft +
+                    "dom_zdanie_sneg_197693_1080x1920.jpg"
+            id.startsWith("7") -> url = craft +
+                    "les_derevya_tuman_110131_1080x1920.jpg"
+            id == "800" -> url = craft +
+                    "okean_pliazh_vid_sverhu_134429_1080x1920.jpg"
+            id == "801" || id == "802" -> url = craft +
+                    "gory_peyzazh_mt_rainier_vashington_trava_hdr_90605_1080x1920.jpg"
+            id == "803" || id == "804" -> url = craft +
+                    "doroga_razmetka_dal_185075_1080x1920.jpg"
+        }
+        return url
+    }
+
     private fun showWeather() {
-        val executor = Executors.newSingleThreadExecutor()
-        val handler = Handler(Looper.getMainLooper())
-        executor.execute {
+        Executors.newSingleThreadExecutor().execute {
             val weatherJson = getWeatherJson()
             val city = getCity(weatherJson)
             val temp = getTemp(weatherJson)
             val pressure = getPressure(weatherJson)
             val humidity = getHumidity(weatherJson)
-            val description: String = getDescription(weatherJson)
+            val description = getDescription(weatherJson)
+            val weatherTypeId = getWeatherId(weatherJson)
+            setBackgroundImage(weatherTypeId)
 
-            handler.post {
+            Handler(Looper.getMainLooper()).post {
                 textViewCity.text = city
                 setTempView(temp)
                 setPressureView(pressure)
@@ -55,6 +86,16 @@ class MainActivity : AppCompatActivity() {
                 setDescriptionView(description)
             }
         }
+    }
+
+    private fun getWeatherId(weatherJson: JSONObject?): String {
+        var weatherId = ""
+        weatherJson?.let {
+            weatherId = it.getJSONArray("weather")
+                .getJSONObject(0)
+                .getString("id")
+        }
+        return weatherId
     }
 
     private fun setDescriptionView(description: String) {
@@ -145,5 +186,22 @@ class MainActivity : AppCompatActivity() {
             null
         }
         return weatherJson
+    }
+
+    private fun setImageByUrl(urlText: String) {
+        var bitmap: Bitmap? = null
+        try {
+            val url = URL(urlText)
+            val connection = url.openConnection()
+            bitmap = BitmapFactory.decodeStream(connection.inputStream)
+        } catch (e: Exception) {
+            Log.e("connection", "Bad connection")
+        }
+
+        Handler(Looper.getMainLooper()).post {
+            bitmap?.let {
+                imageViewBackground.setImageBitmap(it)
+            }
+        }
     }
 }

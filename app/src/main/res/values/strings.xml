@@ -4,4 +4,5 @@
     <string name="edit_text_location_hint">Type city..</string>
     <string name="button_show_weather_text">Weather</string>
     <string name="text_view_city_not">Can\'t find the city..</string>
+    <string name="background">background</string>
 </resources>
