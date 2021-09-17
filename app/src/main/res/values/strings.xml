@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Simple Weather</string>
+    <string name="image_view_content">background</string>
+    <string name="edit_text_location_hint">Type city..</string>
+    <string name="button_show_weather_text">Weather</string>
+    <string name="text_view_city_not">Can\'t find the city..</string>
+</resources>
