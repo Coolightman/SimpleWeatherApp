@@ -13,6 +13,7 @@ import org.json.JSONObject
 import java.net.URL
 import java.util.*
 import java.util.concurrent.Executors
+import kotlin.math.roundToInt
 
 class MainActivity : AppCompatActivity() {
 
@@ -126,7 +127,7 @@ class MainActivity : AppCompatActivity() {
     private fun setTempView(temp: String) {
         var textTemp = ""
         if (temp.isNotEmpty()) {
-            val cutTemp = temp.toFloat().toInt()
+            val cutTemp = temp.toDouble().roundToInt()
             textTemp = "$cutTemp \u2103"
         }
         textViewTemp.text = textTemp
